@@ -15,10 +15,23 @@
       .chip button:hover { opacity:1; }
       .modal-backdrop { background: rgba(2,6,23,.55); }
       .mono { font-variant-numeric: tabular-nums; }
+      :root {
+  --orange-50:  #fdf7ef;
+  --orange-100: #fbedd9;
+  --orange-200: #f6d8b2;
+  --orange-300: #efbe82;
+  --orange-400: #e8994f;
+  --orange-500: #e27d2d;
+  --orange-600: #d46522;
+  --orange-700: #b04e1e;
+  --orange-800: #8c3f20;
+  --orange-900: #71351d;
+  --orange-950: #3d190d;
+}
     </style>
   </head>
 
-  <body class="min-h-screen bg-orange-50 text-slate-900">
+  <body class="min-h-screen bg-[var(--orange-50)] text-slate-900">
     <header class="sticky top-0 z-20 border-b border-transparent bg-white/85 backdrop-blur">
       <div class="mx-auto flex max-w-6xl items-center justify-between gap-5 px-4 py-3">
         <div class="flex items-center gap-3">
@@ -34,8 +47,8 @@
             Connecting…
           </span>
           <button id="addBtn"
-            class="rounded-xl bg-orange-600 px-4 py-2 text-sm font-medium text-white
-       hover:bg-orange-700 shadow-sm transition">
+            class="rounded-xl bg-[var(--orange-600)] px-4 py-2 text-sm font-medium text-white
+       hover:bg-[var(--orange-700)] shadow-sm transition">
             Add place
           </button>
         </div>
