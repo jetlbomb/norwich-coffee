@@ -1,16 +1,7 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Norwich Coffee Journal</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
-</html>
+import React, { useState, useEffect, useMemo } from 'react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from 'firebase/auth';
+import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { 
   Coffee, 
   MapPin, 
@@ -43,15 +34,24 @@ import {
   CheckCircle2,
   Loader2
 } from 'lucide-react';
+import './App.css';
 
 // --- Firebase Configuration & Initialization ---
-const firebaseConfig = JSON.parse(__firebase_config);
+// Replace with your Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyDemoKey",
+  authDomain: "demo.firebaseapp.com",
+  projectId: "norwich-coffee-demo",
+  storageBucket: "norwich-coffee-demo.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdefg"
+};
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// RULE 1: Strict Paths - ensuring we use the provided appId or a very specific fallback
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'norwich-coffee-journal-v1';
+const appId = 'norwich-coffee-journal-v1';
 
 // Icon Mappings
 const TYPE_ICONS = {
@@ -86,9 +86,8 @@ export default function App() {
   const [editingId, setEditingId] = useState(null);
   const [view, setView] = useState('list'); 
   const [loading, setLoading] = useState(true);
-  const [saveStatus, setSaveStatus] = useState('idle'); // idle, saving, saved, error
+  const [saveStatus, setSaveStatus] = useState('idle');
 
-  // Form State
   const initialFormState = {
     place: '',
     location: '',
@@ -102,22 +101,16 @@ export default function App() {
   };
   const [formData, setFormData] = useState(initialFormState);
 
-  // Matcher State
   const [matcherStep, setMatcherStep] = useState(0);
   const [matcherCriteria, setMatcherCriteria] = useState({
     budget: null, 
     vibe: null,
   });
 
-  // RULE 3: Auth Before Queries
   useEffect(() => {
     const initAuth = async () => {
       try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
-        }
+        await signInAnonymously(auth);
       } catch (err) {
         console.error("Auth initialization failed:", err);
       }
@@ -127,17 +120,14 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // Data Fetching with Real-time Sync
   useEffect(() => {
     if (!user) return;
 
-    // RULE 1: Strict Pathing
     const q = collection(db, 'artifacts', appId, 'users', user.uid, 'coffeePlaces');
     
     const unsubscribe = onSnapshot(q, 
       (snapshot) => {
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        // RULE 2: Filter/Sort in memory
         const sortedData = data.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
         setPlaces(sortedData);
         setLoading(false);
@@ -159,7 +149,7 @@ export default function App() {
     const dataToSave = { 
       ...formData, 
       updatedAt: Date.now(),
-      userId: user.uid // Redundant check for safety
+      userId: user.uid
     };
 
     try {
@@ -338,7 +328,6 @@ export default function App() {
               <h2 className="text-3xl font-bold mb-2">Vibe Matcher</h2>
               <p className="text-stone-500 italic">Finding the perfect spot...</p>
             </div>
-            {/* Matcher Steps (Budget, Vibe, Results) remain consistent */}
             <div className="bg-white rounded-3xl shadow-xl p-8 border border-stone-100 min-h-[400px]">
               {matcherStep === 0 && (
                 <div className="animate-in fade-in slide-in-from-bottom-4">
@@ -403,7 +392,6 @@ export default function App() {
         )}
       </main>
 
-      {/* Entry Modal */}
       {isAdding && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
           <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={resetForm} />
@@ -456,7 +444,7 @@ export default function App() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-3">Vibe Tags (Dark text on light)</label>
+                <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-3">Vibe Tags</label>
                 <div className="flex flex-wrap gap-2">
                   {VIBE_OPTIONS.map(v => (
                     <button 
