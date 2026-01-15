@@ -19,7 +19,7 @@
   </head>
 
   <body class="min-h-screen bg-slate-50 text-slate-900">
-    <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/85 backdrop-blur">
+    <header class="sticky top-0 z-20 border-b border-transparent bg-white/85 backdrop-blur">
       <div class="mx-auto flex max-w-6xl items-center justify-between gap-5 px-4 py-3">
         <div class="flex items-center gap-3">
           <div class="h-9 w-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-rose-500"></div>
@@ -44,61 +44,61 @@
     <main class="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-5">
       <!-- Left: Flowchart suggestions -->
       <section class="lg:col-span-2">
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-2xl border border-transparent bg-white p-5 shadow-sm">
           <div class="flex items-start justify-between gap-3">
             <div>
               <h2 class="text-base font-semibold">What are you fancying?</h2>
               <p class="text-sm text-slate-600">Answer a few prompts. I’ll rank your best matches.</p>
             </div>
             <button id="resetFlowBtn"
-              class="rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">
+              class="rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">
               Reset
             </button>
           </div>
 
           <div class="mt-4 space-y-4">
             <!-- Step 1: Budget -->
-            <div class="rounded-2xl border border-slate-200 p-3">
+            <div class="rounded-2xl border border-transparent p-3">
               <p class="text-sm font-medium">1) Budget vibe</p>
               <div class="mt-2 grid grid-cols-3 gap-2">
-                <button data-flow-budget="any" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Any</button>
-                <button data-flow-budget="affordable" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Affordable</button>
-                <button data-flow-budget="highend" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">High-end</button>
+                <button data-flow-budget="any" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Any</button>
+                <button data-flow-budget="affordable" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Affordable</button>
+                <button data-flow-budget="highend" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">High-end</button>
               </div>
               <p class="mt-2 text-xs text-slate-500">Uses your “Price of flat white”. If you haven’t filled prices, it won’t penalise.</p>
             </div>
 
             <!-- Step 2: Atmosphere -->
-            <div class="rounded-2xl border border-slate-200 p-3">
+            <div class="rounded-2xl border border-transparent p-3">
               <p class="text-sm font-medium">2) Atmosphere</p>
               <div class="mt-2 grid grid-cols-3 gap-2">
-                <button data-flow-atmo="any" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Any</button>
-                <button data-flow-atmo="quiet" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Quiet</button>
-                <button data-flow-atmo="busy" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Busy</button>
+                <button data-flow-atmo="any" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Any</button>
+                <button data-flow-atmo="quiet" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Quiet</button>
+                <button data-flow-atmo="busy" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Busy</button>
               </div>
             </div>
 
             <!-- Step 3: Intent -->
-            <div class="rounded-2xl border border-slate-200 p-3">
+            <div class="rounded-2xl border border-transparent p-3">
               <p class="text-sm font-medium">3) What are you doing there?</p>
               <div class="mt-2 grid grid-cols-2 gap-2">
-                <button data-flow-intent="writing" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Writing</button>
-                <button data-flow-intent="creative" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Creative</button>
-                <button data-flow-intent="social" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Social</button>
-                <button data-flow-intent="cosy" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Cosy</button>
-                <button data-flow-intent="inspiring" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Inspiring</button>
-                <button data-flow-intent="aesthetic" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Aesthetic</button>
+                <button data-flow-intent="writing" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Writing</button>
+                <button data-flow-intent="creative" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Creative</button>
+                <button data-flow-intent="social" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Social</button>
+                <button data-flow-intent="cosy" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Cosy</button>
+                <button data-flow-intent="inspiring" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Inspiring</button>
+                <button data-flow-intent="aesthetic" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Aesthetic</button>
               </div>
               <p class="mt-2 text-xs text-slate-500">Matches against your Vibe tags.</p>
             </div>
 
             <!-- Step 4: Extras -->
-            <div class="rounded-2xl border border-slate-200 p-3">
+            <div class="rounded-2xl border border-transparent p-3">
               <p class="text-sm font-medium">4) Extras</p>
               <div class="mt-2 space-y-2">
                 <label class="flex items-center justify-between gap-3 text-sm">
                   <span>Silly drinks a plus?</span>
-                  <select id="flowSilly" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                  <select id="flowSilly" class="rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
                     <option value="any">Any</option>
                     <option value="yes">Yes please</option>
                     <option value="no">No thanks</option>
@@ -107,7 +107,7 @@
 
                 <label class="flex items-center justify-between gap-3 text-sm">
                   <span>Only places you’d return to?</span>
-                  <select id="flowReturn" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                  <select id="flowReturn" class="rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
                     <option value="any">Any</option>
                     <option value="yes">Yes</option>
                     <option value="no">Include “no” too</option>
@@ -116,7 +116,7 @@
 
                 <label class="flex items-center justify-between gap-3 text-sm">
                   <span>Flat white quality matters?</span>
-                  <select id="flowQuality" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                  <select id="flowQuality" class="rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
                     <option value="balanced">Balanced</option>
                     <option value="prioritise">Prioritise great flat whites</option>
                     <option value="ignore">Ignore rating</option>
@@ -130,7 +130,7 @@
               Show suggestions
             </button>
 
-            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+            <div class="rounded-2xl border border-transparent bg-slate-50 p-3">
               <h3 class="text-sm font-semibold">Top matches</h3>
               <p class="text-xs text-slate-600">Scored by vibe match + budget + atmosphere + flat white rating.</p>
               <div id="suggestions" class="mt-3 space-y-2"></div>
@@ -138,16 +138,16 @@
           </div>
         </div>
 
-        <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="mt-6 rounded-2xl border border-transparent bg-white p-5 shadow-sm">
           <h2 class="text-base font-semibold">Quick filters</h2>
           <p class="text-sm text-slate-600">This filters the list on the right.</p>
 
           <div class="mt-3 space-y-3">
             <input id="searchBox" type="text" placeholder="Search by place, location, notes…"
-              class="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"/>
+              class="w-full rounded-2xl border border-transparent bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"/>
 
             <div class="grid grid-cols-2 gap-2">
-              <select id="typeFilter" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+              <select id="typeFilter" class="rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
                 <option value="">All types</option>
                 <option value="cafe">Cafe</option>
                 <option value="coffee shop">Coffee shop</option>
@@ -158,7 +158,7 @@
                 <option value="truck">Truck</option>
               </select>
 
-              <select id="returnFilter" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+              <select id="returnFilter" class="rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
                 <option value="">Return? (any)</option>
                 <option value="true">Would return</option>
                 <option value="false">Would not return</option>
@@ -166,14 +166,14 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
-              <button data-vibe="writing" class="vibeFilterBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Writing</button>
-              <button data-vibe="creative" class="vibeFilterBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Creative</button>
-              <button data-vibe="social" class="vibeFilterBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Social</button>
-              <button data-vibe="cosy" class="vibeFilterBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Cosy</button>
-              <button data-vibe="quiet" class="vibeFilterBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Quiet</button>
-              <button data-vibe="busy" class="vibeFilterBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Busy</button>
-              <button data-vibe="inspiring" class="vibeFilterBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Inspiring</button>
-              <button data-vibe="aesthetic" class="vibeFilterBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Aesthetic</button>
+              <button data-vibe="writing" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Writing</button>
+              <button data-vibe="creative" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Creative</button>
+              <button data-vibe="social" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Social</button>
+              <button data-vibe="cosy" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Cosy</button>
+              <button data-vibe="quiet" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Quiet</button>
+              <button data-vibe="busy" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Busy</button>
+              <button data-vibe="inspiring" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Inspiring</button>
+              <button data-vibe="aesthetic" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Aesthetic</button>
             </div>
 
             <div class="flex items-center justify-between">
@@ -186,8 +186,8 @@
 
       <!-- Right: Places list -->
       <section class="lg:col-span-3">
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div class="flex items-center justify-between gap-3 border-b border-slate-200 p-5">
+        <div class="rounded-2xl border border-transparent bg-white shadow-sm">
+          <div class="flex items-center justify-between gap-3 border-b border-transparent p-5">
             <div>
               <h2 class="text-base font-semibold">Places</h2>
               <p class="text-sm text-slate-600">Click a card to edit.</p>
@@ -212,13 +212,13 @@
       <div class="modal-backdrop absolute inset-0"></div>
 
       <div class="relative w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto">
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-xl">
-          <div class="flex items-center justify-between border-b border-slate-200 p-5">
+        <div class="rounded-2xl border border-transparent bg-white shadow-xl">
+          <div class="flex items-center justify-between border-b border-transparent p-5">
             <div>
               <h3 id="modalTitle" class="text-base font-semibold">Add place</h3>
               <p class="text-sm text-slate-600">Fill what you know. You can edit later.</p>
             </div>
-            <button id="closeModalBtn" class="rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Close</button>
+            <button id="closeModalBtn" class="rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Close</button>
           </div>
 
           <form id="placeForm" class="p-5">
@@ -227,17 +227,17 @@
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div>
                 <label class="text-sm font-medium">Place</label>
-                <input id="place" required class="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., Kofra, Strangers…" />
+                <input id="place" required class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., Kofra, Strangers…" />
               </div>
 
               <div>
                 <label class="text-sm font-medium">Location</label>
-                <input id="location" class="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., Pottergate, NR2…" />
+                <input id="location" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., Pottergate, NR2…" />
               </div>
 
               <div>
                 <label class="text-sm font-medium">Type of place</label>
-                <select id="type" class="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                <select id="type" class="mt-1 w-full rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
                   <option value="">Select…</option>
                   <option value="cafe">Cafe</option>
                   <option value="coffee shop">Coffee shop</option>
@@ -251,7 +251,7 @@
 
               <div>
                 <label class="text-sm font-medium">How good is the flat white?</label>
-                <select id="flatWhiteRating" class="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                <select id="flatWhiteRating" class="mt-1 w-full rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
                   <option value="">Select…</option>
                   <option value="1">1 — nope</option>
                   <option value="2">2 — ok</option>
@@ -263,22 +263,22 @@
 
               <div class="md:col-span-2">
                 <label class="text-sm font-medium">Characteristics of flat white</label>
-                <input id="flatWhiteNotes" class="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., silky, strong, too hot, perfect microfoam…" />
+                <input id="flatWhiteNotes" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., silky, strong, too hot, perfect microfoam…" />
               </div>
 
               <div>
                 <label class="text-sm font-medium">Price of flat white</label>
-                <input id="priceFlatWhite" inputmode="decimal" class="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., 3.60" />
+                <input id="priceFlatWhite" inputmode="decimal" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., 3.60" />
               </div>
 
               <div>
                 <label class="text-sm font-medium">Price of alt milk</label>
-                <input id="priceAltMilk" inputmode="decimal" class="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., 0.40" />
+                <input id="priceAltMilk" inputmode="decimal" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., 0.40" />
               </div>
 
               <div>
                 <label class="text-sm font-medium">Price of syrup</label>
-                <input id="priceSyrup" inputmode="decimal" class="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., 0.60" />
+                <input id="priceSyrup" inputmode="decimal" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., 0.60" />
               </div>
 
               <div class="flex items-center gap-3 pt-6">
@@ -295,12 +295,12 @@
 
               <div class="md:col-span-2">
                 <label class="text-sm font-medium">Why here?</label>
-                <textarea id="whyHere" rows="2" class="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., meeting someone, writing session, near a walk…"></textarea>
+                <textarea id="whyHere" rows="2" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., meeting someone, writing session, near a walk…"></textarea>
               </div>
 
               <div class="md:col-span-2">
                 <label class="text-sm font-medium">Would you return?</label>
-                <select id="wouldReturn" class="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                <select id="wouldReturn" class="mt-1 w-full rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
                   <option value="">Select…</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
@@ -316,7 +316,7 @@
 
               <div class="flex gap-2 sm:justify-end">
                 <button type="button" id="cancelBtn"
-                  class="rounded-2xl border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">
+                  class="rounded-2xl border border-transparent px-4 py-2 text-sm hover:bg-slate-50">
                   Cancel
                 </button>
                 <button type="submit"
@@ -327,7 +327,7 @@
             </div>
           </form>
 
-          <div class="border-t border-slate-200 p-5 text-xs text-slate-500">
+          <div class="border-t border-transparent p-5 text-xs text-slate-500">
             Tip: if you want “aesthetic” as a vibe, include it in tags (it’s in the suggestion step too).
           </div>
         </div>
@@ -468,7 +468,7 @@
         VIBES.forEach(v => {
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.className = "rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50";
+          btn.className = "rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50";
           btn.textContent = v;
           btn.addEventListener("click", () => {
             if (selectedVibes.has(v)) selectedVibes.delete(v);
@@ -692,7 +692,7 @@
         box.innerHTML = ranked.map(({p,score}) => {
           const chips = (p.vibeTags ?? []).slice(0, 4).map(v => `<span class="chip bg-white">${esc(v)}</span>`).join("");
           return `
-            <div class="rounded-2xl border border-slate-200 bg-white p-3">
+            <div class="rounded-2xl border border-transparent bg-white p-3">
               <div class="flex items-start justify-between gap-3">
                 <div>
                   <p class="font-semibold">${esc(p.place ?? "")}</p>
@@ -705,7 +705,7 @@
               </div>
               <div class="mt-2 flex flex-wrap gap-2">${chips}</div>
               <div class="mt-2 flex gap-2">
-                <button class="openFromSuggest rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50" data-id="${esc(p.id)}">
+                <button class="openFromSuggest rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50" data-id="${esc(p.id)}">
                   Open
                 </button>
               </div>
