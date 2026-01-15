@@ -33,31 +33,42 @@ import {
 } from 'lucide-react';
 import './App.css';
 
-// Icon Mappings
-const TYPE_ICONS = {
-  'Coffee shop': <Coffee size={14} />,
-  'Specialty Roaster': <Zap size={14} />,
-  'Cafe': <Utensils size={14} />,
-  'Bakery': <Croissant size={14} />,
-  'Bar': <Wine size={14} />,
-  'Pub': <Beer size={14} />,
-  'Work-friendly': <Briefcase size={14} />,
-  'Quick Stop': <Zap size={14} />
+// Icon Mappings - using object keys since we can't use JSX at module level
+const TYPE_ICON_NAMES = {
+  'Coffee shop': 'Coffee',
+  'Specialty Roaster': 'Zap',
+  'Cafe': 'Utensils',
+  'Bakery': 'Croissant',
+  'Bar': 'Wine',
+  'Pub': 'Beer',
+  'Work-friendly': 'Briefcase',
+  'Quick Stop': 'Zap'
 };
 
-const VIBE_ICONS = {
-  'Writing Vibes': <PenTool size={12} />,
-  'Chill': <Wind size={12} />,
-  'Quiet': <VolumeX size={12} />,
-  'Aesthetic': <Palette size={12} />,
-  'Social': <Users size={12} />,
-  'Industrial': <Factory size={12} />,
-  'Cozy': <Home size={12} />,
-  'Outdoor': <Sun size={12} />
+const VIBE_ICON_NAMES = {
+  'Writing Vibes': 'PenTool',
+  'Chill': 'Wind',
+  'Quiet': 'VolumeX',
+  'Aesthetic': 'Palette',
+  'Social': 'Users',
+  'Industrial': 'Factory',
+  'Cozy': 'Home',
+  'Outdoor': 'Sun'
 };
 
-const PLACE_TYPES = Object.keys(TYPE_ICONS);
-const VIBE_OPTIONS = Object.keys(VIBE_ICONS);
+// Helper to render icons
+const IconComponent = ({ name, size = 14 }) => {
+  const iconMap = {
+    Coffee, MapPin, Plus, Edit2, Trash2, Star, Tag, ChevronRight, Sparkles,
+    DollarSign, Undo2, PenTool, Wind, VolumeX, Palette, Users, Factory, Home,
+    Sun, Utensils, Beer, Wine, Briefcase, Zap, Croissant, CheckCircle2, Loader2
+  };
+  const Icon = iconMap[name];
+  return Icon ? <Icon size={size} /> : null;
+};
+
+const PLACE_TYPES = Object.keys(TYPE_ICON_NAMES);
+const VIBE_OPTIONS = Object.keys(VIBE_ICON_NAMES);
 
 export default function App() {
   const [user, setUser] = useState({ uid: 'demo-user' });
@@ -232,11 +243,11 @@ export default function App() {
 
                     <div className="flex flex-wrap gap-2 my-4">
                       <span className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-stone-500 border border-stone-200 px-2.5 py-1 rounded-lg bg-stone-50">
-                        {TYPE_ICONS[p.type] || <Tag size={12} />} {p.type}
+                        <IconComponent name={TYPE_ICON_NAMES[p.type]} size={12} /> {p.type}
                       </span>
                       {p.vibes && p.vibes.map(v => (
                         <span key={v} className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-orange-700 bg-orange-100/50 border border-orange-200 px-2.5 py-1 rounded-lg">
-                          {VIBE_ICONS[v] || <Sparkles size={12} />} {v}
+                          <IconComponent name={VIBE_ICON_NAMES[v]} size={12} /> {v}
                         </span>
                       ))}
                     </div>
@@ -299,7 +310,7 @@ export default function App() {
                         onClick={() => { setMatcherCriteria({...matcherCriteria, vibe: v}); setMatcherStep(2); }}
                         className="flex items-center gap-3 p-4 rounded-xl border-2 border-stone-100 hover:border-orange-500 hover:bg-orange-50 transition-all font-medium"
                       >
-                        <span className="text-orange-600">{VIBE_ICONS[v]}</span>
+                        <span className="text-orange-600"><IconComponent name={VIBE_ICON_NAMES[v]} size={14} /></span>
                         {v}
                       </button>
                     ))}
@@ -359,7 +370,7 @@ export default function App() {
                 <div className="flex flex-wrap gap-2">
                   {PLACE_TYPES.map(t => (
                     <button key={t} type="button" onClick={() => setFormData({...formData, type: t})} className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border-2 transition-all ${formData.type === t ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-sm' : 'border-stone-100 text-stone-700 bg-stone-50 hover:bg-white'}`}>
-                      {TYPE_ICONS[t]} {t}
+                      <IconComponent name={TYPE_ICON_NAMES[t]} size={14} /> {t}
                     </button>
                   ))}
                 </div>
@@ -394,7 +405,7 @@ export default function App() {
                       onClick={() => toggleVibe(v)} 
                       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all ${formData.vibes?.includes(v) ? 'border-stone-900 bg-stone-900 text-white shadow-lg' : 'border-stone-200 text-stone-900 bg-stone-100/50 hover:border-stone-300'}`}
                     >
-                      {VIBE_ICONS[v]} {v}
+                      <IconComponent name={VIBE_ICON_NAMES[v]} size={14} /> {v}
                     </button>
                   ))}
                 </div>
