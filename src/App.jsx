@@ -1,7 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from 'firebase/auth';
-import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { 
   Coffee, 
   MapPin, 
@@ -36,23 +33,6 @@ import {
 } from 'lucide-react';
 import './App.css';
 
-// --- Firebase Configuration & Initialization ---
-// Replace with your Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDemoKey",
-  authDomain: "demo.firebaseapp.com",
-  projectId: "norwich-coffee-demo",
-  storageBucket: "norwich-coffee-demo.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdefg"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-const appId = 'norwich-coffee-journal-v1';
-
 // Icon Mappings
 const TYPE_ICONS = {
   'Coffee shop': <Coffee size={14} />,
@@ -80,12 +60,12 @@ const PLACE_TYPES = Object.keys(TYPE_ICONS);
 const VIBE_OPTIONS = Object.keys(VIBE_ICONS);
 
 export default function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({ uid: 'demo-user' });
   const [places, setPlaces] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [view, setView] = useState('list'); 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState('idle');
 
   const initialFormState = {
@@ -107,40 +87,6 @@ export default function App() {
     vibe: null,
   });
 
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        await signInAnonymously(auth);
-      } catch (err) {
-        console.error("Auth initialization failed:", err);
-      }
-    };
-    initAuth();
-    const unsubscribe = onAuthStateChanged(auth, setUser);
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-
-    const q = collection(db, 'artifacts', appId, 'users', user.uid, 'coffeePlaces');
-    
-    const unsubscribe = onSnapshot(q, 
-      (snapshot) => {
-        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const sortedData = data.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-        setPlaces(sortedData);
-        setLoading(false);
-      }, 
-      (err) => {
-        console.error("Firestore retrieval error:", err);
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [user]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) return;
@@ -148,17 +94,16 @@ export default function App() {
     setSaveStatus('saving');
     const dataToSave = { 
       ...formData, 
+      id: editingId || Date.now().toString(),
       updatedAt: Date.now(),
       userId: user.uid
     };
 
     try {
       if (editingId) {
-        const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'coffeePlaces', editingId);
-        await updateDoc(docRef, dataToSave);
+        setPlaces(places.map(p => p.id === editingId ? dataToSave : p));
       } else {
-        const colRef = collection(db, 'artifacts', appId, 'users', user.uid, 'coffeePlaces');
-        await addDoc(colRef, dataToSave);
+        setPlaces([dataToSave, ...places]);
       }
       
       setSaveStatus('saved');
@@ -185,13 +130,8 @@ export default function App() {
     setIsAdding(true);
   };
 
-  const deletePlace = async (id) => {
-    if (!user) return;
-    try {
-      await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'coffeePlaces', id));
-    } catch (err) {
-      console.error("Delete failed:", err);
-    }
+  const deletePlace = (id) => {
+    setPlaces(places.filter(p => p.id !== id));
   };
 
   const toggleVibe = (vibe) => {
@@ -212,12 +152,13 @@ export default function App() {
     });
   }, [places, matcherCriteria]);
 
+
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-stone-50 text-orange-900">
         <div className="flex flex-col items-center">
           <Loader2 size={40} className="animate-spin text-orange-600 mb-4" />
-          <p className="font-medium">Connecting to your journal...</p>
+          <p className="font-medium">Loading your journal...</p>
         </div>
       </div>
     );
