@@ -1,0 +1,908 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Norwich Coffee Log</title>
+
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style>
+      /* tiny niceties */
+      .chip { display:inline-flex; align-items:center; gap:.4rem; padding:.25rem .6rem; border-radius:999px; font-size:.85rem; border:1px solid rgb(226 232 240); }
+      .chip button { opacity:.75; }
+      .chip button:hover { opacity:1; }
+      .modal-backdrop { background: rgba(2,6,23,.55); }
+      .mono { font-variant-numeric: tabular-nums; }
+    </style>
+  </head>
+
+  <body class="min-h-screen bg-slate-50 text-slate-900">
+    <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/85 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+        <div class="flex items-center gap-3">
+          <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-rose-500"></div>
+          <div>
+            <h1 class="text-lg font-semibold leading-tight">Norwich Coffee Log</h1>
+            <p class="text-sm text-slate-600">Shared, editable coffee places + vibe-based suggestions</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span id="statusPill" class="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-700">
+            Connecting…
+          </span>
+          <button id="addBtn"
+            class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">
+            Add place
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-5">
+      <!-- Left: Flowchart suggestions -->
+      <section class="lg:col-span-2">
+        <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2 class="text-base font-semibold">What are you fancying?</h2>
+              <p class="text-sm text-slate-600">Answer a few prompts. I’ll rank your best matches.</p>
+            </div>
+            <button id="resetFlowBtn"
+              class="rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">
+              Reset
+            </button>
+          </div>
+
+          <div class="mt-4 space-y-4">
+            <!-- Step 1: Budget -->
+            <div class="rounded-xl border border-slate-200 p-3">
+              <p class="text-sm font-medium">1) Budget vibe</p>
+              <div class="mt-2 grid grid-cols-3 gap-2">
+                <button data-flow-budget="any" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Any</button>
+                <button data-flow-budget="affordable" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Affordable</button>
+                <button data-flow-budget="highend" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">High-end</button>
+              </div>
+              <p class="mt-2 text-xs text-slate-500">Uses your “Price of flat white”. If you haven’t filled prices, it won’t penalise.</p>
+            </div>
+
+            <!-- Step 2: Atmosphere -->
+            <div class="rounded-xl border border-slate-200 p-3">
+              <p class="text-sm font-medium">2) Atmosphere</p>
+              <div class="mt-2 grid grid-cols-3 gap-2">
+                <button data-flow-atmo="any" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Any</button>
+                <button data-flow-atmo="quiet" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Quiet</button>
+                <button data-flow-atmo="busy" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Busy</button>
+              </div>
+            </div>
+
+            <!-- Step 3: Intent -->
+            <div class="rounded-xl border border-slate-200 p-3">
+              <p class="text-sm font-medium">3) What are you doing there?</p>
+              <div class="mt-2 grid grid-cols-2 gap-2">
+                <button data-flow-intent="writing" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Writing</button>
+                <button data-flow-intent="creative" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Creative</button>
+                <button data-flow-intent="social" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Social</button>
+                <button data-flow-intent="cosy" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Cosy</button>
+                <button data-flow-intent="inspiring" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Inspiring</button>
+                <button data-flow-intent="aesthetic" class="flowBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Aesthetic</button>
+              </div>
+              <p class="mt-2 text-xs text-slate-500">Matches against your Vibe tags.</p>
+            </div>
+
+            <!-- Step 4: Extras -->
+            <div class="rounded-xl border border-slate-200 p-3">
+              <p class="text-sm font-medium">4) Extras</p>
+              <div class="mt-2 space-y-2">
+                <label class="flex items-center justify-between gap-3 text-sm">
+                  <span>Silly drinks a plus?</span>
+                  <select id="flowSilly" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <option value="any">Any</option>
+                    <option value="yes">Yes please</option>
+                    <option value="no">No thanks</option>
+                  </select>
+                </label>
+
+                <label class="flex items-center justify-between gap-3 text-sm">
+                  <span>Only places you’d return to?</span>
+                  <select id="flowReturn" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <option value="any">Any</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">Include “no” too</option>
+                  </select>
+                </label>
+
+                <label class="flex items-center justify-between gap-3 text-sm">
+                  <span>Flat white quality matters?</span>
+                  <select id="flowQuality" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                    <option value="balanced">Balanced</option>
+                    <option value="prioritise">Prioritise great flat whites</option>
+                    <option value="ignore">Ignore rating</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <button id="runSuggestBtn"
+              class="w-full rounded-xl bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500">
+              Show suggestions
+            </button>
+
+            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+              <h3 class="text-sm font-semibold">Top matches</h3>
+              <p class="text-xs text-slate-600">Scored by vibe match + budget + atmosphere + flat white rating.</p>
+              <div id="suggestions" class="mt-3 space-y-2"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <h2 class="text-base font-semibold">Quick filters</h2>
+          <p class="text-sm text-slate-600">This filters the list on the right.</p>
+
+          <div class="mt-3 space-y-3">
+            <input id="searchBox" type="text" placeholder="Search by place, location, notes…"
+              class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"/>
+
+            <div class="grid grid-cols-2 gap-2">
+              <select id="typeFilter" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                <option value="">All types</option>
+                <option value="cafe">Cafe</option>
+                <option value="coffee shop">Coffee shop</option>
+                <option value="farm shop">Farm shop</option>
+                <option value="bar">Bar</option>
+                <option value="pub">Pub</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="truck">Truck</option>
+              </select>
+
+              <select id="returnFilter" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                <option value="">Return? (any)</option>
+                <option value="true">Would return</option>
+                <option value="false">Would not return</option>
+              </select>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <button data-vibe="writing" class="vibeFilterBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Writing</button>
+              <button data-vibe="creative" class="vibeFilterBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Creative</button>
+              <button data-vibe="social" class="vibeFilterBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Social</button>
+              <button data-vibe="cosy" class="vibeFilterBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Cosy</button>
+              <button data-vibe="quiet" class="vibeFilterBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Quiet</button>
+              <button data-vibe="busy" class="vibeFilterBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Busy</button>
+              <button data-vibe="inspiring" class="vibeFilterBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Inspiring</button>
+              <button data-vibe="aesthetic" class="vibeFilterBtn rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Aesthetic</button>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <p id="countP" class="text-sm text-slate-600">0 places</p>
+              <button id="clearFiltersBtn" class="text-sm font-medium text-indigo-700 hover:text-indigo-600">Clear filters</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Places list -->
+      <section class="lg:col-span-3">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div class="flex items-center justify-between gap-3 border-b border-slate-200 p-4">
+            <div>
+              <h2 class="text-base font-semibold">Places</h2>
+              <p class="text-sm text-slate-600">Click a card to edit.</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-slate-500">Signed in as</p>
+              <p id="uidP" class="mono text-xs text-slate-700">—</p>
+            </div>
+          </div>
+
+          <div id="placesList" class="divide-y divide-slate-100"></div>
+        </div>
+
+        <p class="mt-3 text-xs text-slate-500">
+          Notes: Prices are assumed £ if you type numbers. Tags should match your vibe list. Data syncs live via Firestore realtime updates. :contentReference[oaicite:5]{index=5}
+        </p>
+      </section>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 z-50 hidden">
+      <div class="modal-backdrop absolute inset-0"></div>
+
+      <div class="relative mx-auto mt-10 w-[95vw] max-w-3xl">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-xl">
+          <div class="flex items-center justify-between border-b border-slate-200 p-4">
+            <div>
+              <h3 id="modalTitle" class="text-base font-semibold">Add place</h3>
+              <p class="text-sm text-slate-600">Fill what you know. You can edit later.</p>
+            </div>
+            <button id="closeModalBtn" class="rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Close</button>
+          </div>
+
+          <form id="placeForm" class="p-4">
+            <input type="hidden" id="docId" value="" />
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label class="text-sm font-medium">Place</label>
+                <input id="place" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., Kofra, Strangers…" />
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Location</label>
+                <input id="location" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., Pottergate, NR2…" />
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Type of place</label>
+                <select id="type" class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                  <option value="">Select…</option>
+                  <option value="cafe">Cafe</option>
+                  <option value="coffee shop">Coffee shop</option>
+                  <option value="farm shop">Farm shop</option>
+                  <option value="bar">Bar</option>
+                  <option value="pub">Pub</option>
+                  <option value="restaurant">Restaurant</option>
+                  <option value="truck">Truck</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">How good is the flat white?</label>
+                <select id="flatWhiteRating" class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                  <option value="">Select…</option>
+                  <option value="1">1 — nope</option>
+                  <option value="2">2 — ok</option>
+                  <option value="3">3 — solid</option>
+                  <option value="4">4 — very good</option>
+                  <option value="5">5 — elite</option>
+                </select>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="text-sm font-medium">Characteristics of flat white</label>
+                <input id="flatWhiteNotes" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., silky, strong, too hot, perfect microfoam…" />
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Price of flat white</label>
+                <input id="priceFlatWhite" inputmode="decimal" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., 3.60" />
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Price of alt milk</label>
+                <input id="priceAltMilk" inputmode="decimal" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., 0.40" />
+              </div>
+
+              <div>
+                <label class="text-sm font-medium">Price of syrup</label>
+                <input id="priceSyrup" inputmode="decimal" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., 0.60" />
+              </div>
+
+              <div class="flex items-center gap-3 pt-6">
+                <input id="sillyDrinks" type="checkbox" class="h-4 w-4" />
+                <label class="text-sm font-medium">Are there silly drinks?</label>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="text-sm font-medium">Vibe tags</label>
+                <p class="text-xs text-slate-500">Click to add/remove. Use these for suggestions.</p>
+                <div class="mt-2 flex flex-wrap gap-2" id="vibePicker"></div>
+                <div class="mt-2" id="vibeChosen"></div>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="text-sm font-medium">Why here?</label>
+                <textarea id="whyHere" rows="2" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm" placeholder="e.g., meeting someone, writing session, near a walk…"></textarea>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="text-sm font-medium">Would you return?</label>
+                <select id="wouldReturn" class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm">
+                  <option value="">Select…</option>
+                  <option value="true">Yes</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <button id="deleteBtn" type="button"
+                class="hidden rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100">
+                Delete
+              </button>
+
+              <div class="flex gap-2 sm:justify-end">
+                <button type="button" id="cancelBtn"
+                  class="rounded-xl border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">
+                  Cancel
+                </button>
+                <button type="submit"
+                  class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">
+                  Save
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <div class="border-t border-slate-200 p-4 text-xs text-slate-500">
+            Tip: if you want “aesthetic” as a vibe, include it in tags (it’s in the suggestion step too).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      /***********************
+       *  Firebase imports
+       ***********************/
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        addDoc,
+        doc,
+        setDoc,
+        updateDoc,
+        deleteDoc,
+        onSnapshot,
+        serverTimestamp,
+        query,
+        orderBy
+      } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+      import {
+        getAuth,
+        signInAnonymously,
+        onAuthStateChanged
+      } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+      // Firebase JS SDK is actively versioned; we're pinning a known recent version for stability. :contentReference[oaicite:6]{index=6}
+
+      /***********************
+       *  1) PASTE YOUR CONFIG
+       ***********************/
+      const firebaseConfig = {
+       apiKey: "AIzaSyApmJs40Wn_-Xp9UEIYPTCyvcBtm2ErIEo",
+  authDomain: "norwich-coffee.firebaseapp.com",
+  projectId: "norwich-coffee",
+  storageBucket: "norwich-coffee.firebasestorage.app",
+  messagingSenderId: "579211470683",
+  appId: "1:579211470683:web:9ef23b76cd14b8b4c05c7e"
+      };
+
+      /***********************
+       *  App state
+       ***********************/
+      const VIBES = ["writing","creative","social","cosy","quiet","busy","inspiring","aesthetic"];
+      let selectedVibes = new Set();
+      let allPlaces = []; // raw from firestore
+      let filteredPlaces = []; // after filters
+      let activeVibeFilter = ""; // quick filter single vibe
+      let uid = null;
+
+      const flow = {
+        budget: "any",        // any | affordable | highend
+        atmo: "any",          // any | quiet | busy
+        intent: "",           // one of VIBES, optional
+        silly: "any",         // any | yes | no
+        onlyReturn: "any",    // any | yes | no
+        quality: "balanced"   // balanced | prioritise | ignore
+      };
+
+      /***********************
+       *  DOM helpers
+       ***********************/
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => (s ?? "").toString().replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[c]));
+
+      function money(n){
+        if (n === null || n === undefined || n === "") return "";
+        const num = Number(n);
+        if (Number.isNaN(num)) return "";
+        return "£" + num.toFixed(2);
+      }
+
+      function parseMoney(val){
+        if (!val) return null;
+        const cleaned = String(val).replace(/[^0-9.]/g, "");
+        if (!cleaned) return null;
+        const num = Number(cleaned);
+        return Number.isFinite(num) ? num : null;
+      }
+
+      function setStatus(text, tone="neutral"){
+        const pill = $("statusPill");
+        pill.textContent = text;
+        pill.className = "rounded-full px-3 py-1 text-xs";
+        if (tone === "ok") pill.classList.add("bg-emerald-50","text-emerald-700","border","border-emerald-200");
+        else if (tone === "bad") pill.classList.add("bg-rose-50","text-rose-700","border","border-rose-200");
+        else pill.classList.add("bg-slate-100","text-slate-700");
+      }
+
+      /***********************
+       *  Modal
+       ***********************/
+      function openModal(mode="add", place=null){
+        $("modal").classList.remove("hidden");
+        $("placeForm").reset();
+        selectedVibes = new Set();
+
+        $("docId").value = place?.id ?? "";
+        $("modalTitle").textContent = mode === "edit" ? "Edit place" : "Add place";
+        $("deleteBtn").classList.toggle("hidden", mode !== "edit");
+
+        // populate vibe picker + chosen
+        renderVibePicker();
+        renderChosenVibes();
+
+        if (place){
+          $("place").value = place.place ?? "";
+          $("location").value = place.location ?? "";
+          $("type").value = place.type ?? "";
+          $("flatWhiteRating").value = place.flatWhiteRating ?? "";
+          $("flatWhiteNotes").value = place.flatWhiteNotes ?? "";
+          $("priceFlatWhite").value = place.priceFlatWhite ?? "";
+          $("priceAltMilk").value = place.priceAltMilk ?? "";
+          $("priceSyrup").value = place.priceSyrup ?? "";
+          $("sillyDrinks").checked = !!place.sillyDrinks;
+          $("whyHere").value = place.whyHere ?? "";
+          $("wouldReturn").value = (place.wouldReturn === true) ? "true" : (place.wouldReturn === false ? "false" : "");
+
+          (place.vibeTags ?? []).forEach(v => selectedVibes.add(v));
+          renderChosenVibes();
+        }
+      }
+
+      function closeModal(){
+        $("modal").classList.add("hidden");
+      }
+
+      /***********************
+       *  Vibe picker
+       ***********************/
+      function renderVibePicker(){
+        const wrap = $("vibePicker");
+        wrap.innerHTML = "";
+        VIBES.forEach(v => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50";
+          btn.textContent = v;
+          btn.addEventListener("click", () => {
+            if (selectedVibes.has(v)) selectedVibes.delete(v);
+            else selectedVibes.add(v);
+            renderChosenVibes();
+          });
+          wrap.appendChild(btn);
+        });
+      }
+
+      function renderChosenVibes(){
+        const wrap = $("vibeChosen");
+        wrap.innerHTML = "";
+        if (selectedVibes.size === 0){
+          wrap.innerHTML = `<p class="text-xs text-slate-500">No vibe tags selected.</p>`;
+          return;
+        }
+        [...selectedVibes].sort().forEach(v => {
+          const chip = document.createElement("span");
+          chip.className = "chip bg-white";
+          chip.innerHTML = `<span>${esc(v)}</span>
+            <button type="button" aria-label="remove">×</button>`;
+          chip.querySelector("button").addEventListener("click", () => {
+            selectedVibes.delete(v);
+            renderChosenVibes();
+          });
+          wrap.appendChild(chip);
+        });
+      }
+
+      /***********************
+       *  List rendering
+       ***********************/
+      function placeCard(p){
+        const vibes = (p.vibeTags ?? []).slice(0, 5).map(v => `<span class="chip bg-slate-50">${esc(v)}</span>`).join("");
+        const rating = p.flatWhiteRating ? `★ ${p.flatWhiteRating}/5` : "—";
+        const fwPrice = money(p.priceFlatWhite);
+        const returnTxt = p.wouldReturn === true ? "Would return" : (p.wouldReturn === false ? "Wouldn’t return" : "Return: —");
+
+        return `
+          <button class="w-full text-left p-4 hover:bg-slate-50"
+            data-id="${esc(p.id)}">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-semibold">${esc(p.place ?? "")}</h3>
+                  ${p.type ? `<span class="chip bg-white">${esc(p.type)}</span>` : ""}
+                </div>
+                <p class="mt-1 text-sm text-slate-600">
+                  ${esc(p.location ?? "")}
+                </p>
+              </div>
+
+              <div class="text-right">
+                <p class="mono text-sm font-medium">${fwPrice || ""}</p>
+                <p class="text-xs text-slate-500">${esc(rating)}</p>
+              </div>
+            </div>
+
+            <div class="mt-3 flex flex-wrap gap-2">
+              ${vibes}
+              ${p.sillyDrinks ? `<span class="chip bg-rose-50 border-rose-200 text-rose-700">Silly drinks</span>` : ""}
+              <span class="chip bg-emerald-50 border-emerald-200 text-emerald-700">${esc(returnTxt)}</span>
+            </div>
+
+            ${p.flatWhiteNotes ? `<p class="mt-3 text-sm text-slate-700"><span class="font-medium">Flat white:</span> ${esc(p.flatWhiteNotes)}</p>` : ""}
+
+            ${p.whyHere ? `<p class="mt-2 text-sm text-slate-700"><span class="font-medium">Why:</span> ${esc(p.whyHere)}</p>` : ""}
+          </button>
+        `;
+      }
+
+      function renderPlaces(){
+        const wrap = $("placesList");
+        wrap.innerHTML = filteredPlaces.length
+          ? filteredPlaces.map(placeCard).join("")
+          : `<div class="p-6 text-sm text-slate-600">No matches. Try clearing filters or adding more places.</div>`;
+
+        $("countP").textContent = `${filteredPlaces.length} place${filteredPlaces.length === 1 ? "" : "s"}`;
+
+        wrap.querySelectorAll("button[data-id]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-id");
+            const p = allPlaces.find(x => x.id === id);
+            if (p) openModal("edit", p);
+          });
+        });
+      }
+
+      /***********************
+       *  Filters
+       ***********************/
+      function applyFilters(){
+        const q = $("searchBox").value.trim().toLowerCase();
+        const type = $("typeFilter").value;
+        const rf = $("returnFilter").value;
+
+        filteredPlaces = allPlaces.filter(p => {
+          // search
+          if (q){
+            const blob = [
+              p.place, p.location, p.type, p.flatWhiteNotes, p.whyHere,
+              (p.vibeTags ?? []).join(" ")
+            ].join(" ").toLowerCase();
+            if (!blob.includes(q)) return false;
+          }
+
+          // type
+          if (type && (p.type ?? "") !== type) return false;
+
+          // return
+          if (rf){
+            const want = (rf === "true");
+            if (p.wouldReturn !== want) return false;
+          }
+
+          // vibe filter (single vibe)
+          if (activeVibeFilter){
+            const tags = p.vibeTags ?? [];
+            if (!tags.includes(activeVibeFilter)) return false;
+          }
+
+          return true;
+        });
+
+        // mild default sort: best flat white first, then name
+        filteredPlaces.sort((a,b) => {
+          const ar = Number(a.flatWhiteRating ?? 0);
+          const br = Number(b.flatWhiteRating ?? 0);
+          if (br !== ar) return br - ar;
+          return String(a.place ?? "").localeCompare(String(b.place ?? ""));
+        });
+
+        renderPlaces();
+      }
+
+      function toggleVibeFilter(v){
+        activeVibeFilter = (activeVibeFilter === v) ? "" : v;
+        // visual state
+        document.querySelectorAll(".vibeFilterBtn").forEach(b => {
+          const on = b.getAttribute("data-vibe") === activeVibeFilter;
+          b.classList.toggle("bg-slate-900", on);
+          b.classList.toggle("text-white", on);
+          b.classList.toggle("border-slate-900", on);
+        });
+        applyFilters();
+      }
+
+      /***********************
+       *  Suggestion scoring
+       ***********************/
+      function scorePlace(p){
+        let score = 0;
+
+        const tags = new Set(p.vibeTags ?? []);
+        const price = (p.priceFlatWhite ?? null);
+        const rating = Number(p.flatWhiteRating ?? 0);
+
+        // vibe intent
+        if (flow.intent){
+          if (tags.has(flow.intent)) score += 25;
+          else score -= 5;
+        }
+
+        // atmosphere
+        if (flow.atmo !== "any"){
+          if (tags.has(flow.atmo)) score += 15;
+          else score -= 4;
+        }
+
+        // silly drinks
+        if (flow.silly === "yes"){
+          score += p.sillyDrinks ? 8 : -2;
+        } else if (flow.silly === "no"){
+          score += p.sillyDrinks ? -3 : 4;
+        }
+
+        // return
+        if (flow.onlyReturn === "yes"){
+          score += (p.wouldReturn === true) ? 12 : -20;
+        }
+
+        // budget (heuristic)
+        // affordable: under ~£3.40 gets a boost; high-end: over ~£3.80 gets a boost
+        // if missing price, neutral.
+        if (price != null){
+          if (flow.budget === "affordable"){
+            score += (price <= 3.40) ? 14 : (price <= 3.80 ? 4 : -6);
+          } else if (flow.budget === "highend"){
+            score += (price >= 3.80) ? 12 : (price >= 3.40 ? 3 : -5);
+          }
+        }
+
+        // flat white quality preference
+        if (flow.quality === "prioritise"){
+          score += rating * 6; // up to +30
+        } else if (flow.quality === "balanced"){
+          score += rating * 3; // up to +15
+        } else {
+          // ignore
+        }
+
+        // slight boost if has notes (more confident data)
+        if (p.flatWhiteNotes) score += 2;
+
+        return score;
+      }
+
+      function renderSuggestions(){
+        const box = $("suggestions");
+        if (!allPlaces.length){
+          box.innerHTML = `<p class="text-sm text-slate-600">Add some places first.</p>`;
+          return;
+        }
+
+        const ranked = [...allPlaces]
+          .map(p => ({ p, score: scorePlace(p) }))
+          .sort((a,b) => b.score - a.score)
+          .slice(0, 6);
+
+        box.innerHTML = ranked.map(({p,score}) => {
+          const chips = (p.vibeTags ?? []).slice(0, 4).map(v => `<span class="chip bg-white">${esc(v)}</span>`).join("");
+          return `
+            <div class="rounded-xl border border-slate-200 bg-white p-3">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="font-semibold">${esc(p.place ?? "")}</p>
+                  <p class="text-sm text-slate-600">${esc(p.location ?? "")}</p>
+                </div>
+                <div class="text-right">
+                  <p class="mono text-sm font-semibold">${Math.round(score)}</p>
+                  <p class="text-xs text-slate-500">${p.priceFlatWhite != null ? money(p.priceFlatWhite) : ""}</p>
+                </div>
+              </div>
+              <div class="mt-2 flex flex-wrap gap-2">${chips}</div>
+              <div class="mt-2 flex gap-2">
+                <button class="openFromSuggest rounded-xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50" data-id="${esc(p.id)}">
+                  Open
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        box.querySelectorAll(".openFromSuggest").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const id = btn.getAttribute("data-id");
+            const p = allPlaces.find(x => x.id === id);
+            if (p) openModal("edit", p);
+          });
+        });
+      }
+
+      function resetFlow(){
+        flow.budget = "any";
+        flow.atmo = "any";
+        flow.intent = "";
+        flow.silly = "any";
+        flow.onlyReturn = "any";
+        flow.quality = "balanced";
+        $("flowSilly").value = "any";
+        $("flowReturn").value = "any";
+        $("flowQuality").value = "balanced";
+        // clear visual state of flow buttons
+        document.querySelectorAll(".flowBtn").forEach(b => {
+          b.classList.remove("bg-slate-900","text-white","border-slate-900");
+        });
+        $("suggestions").innerHTML = "";
+      }
+
+      function setFlowButtonState(groupAttr, value){
+        // groupAttr = data-flow-budget / data-flow-atmo / data-flow-intent
+        document.querySelectorAll(`button[${groupAttr}]`).forEach(b => {
+          const on = b.getAttribute(groupAttr) === value;
+          b.classList.toggle("bg-slate-900", on);
+          b.classList.toggle("text-white", on);
+          b.classList.toggle("border-slate-900", on);
+        });
+      }
+
+      /***********************
+       *  Firebase init + realtime sync
+       ***********************/
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+
+      setStatus("Connecting…");
+
+      onAuthStateChanged(auth, async (user) => {
+        if (!user){
+          try {
+            await signInAnonymously(auth);
+          } catch (e){
+            console.error(e);
+            setStatus("Auth failed", "bad");
+            return;
+          }
+          return;
+        }
+
+        uid = user.uid;
+        $("uidP").textContent = uid;
+        setStatus("Online", "ok");
+
+        // realtime list
+        const q = query(collection(db, "places"), orderBy("updatedAt", "desc"));
+        onSnapshot(q, (snap) => {
+          allPlaces = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          applyFilters();
+        }, (err) => {
+          console.error(err);
+          setStatus("Firestore error", "bad");
+        });
+      });
+
+      /***********************
+       *  Events
+       ***********************/
+      $("addBtn").addEventListener("click", () => openModal("add"));
+      $("closeModalBtn").addEventListener("click", closeModal);
+      $("cancelBtn").addEventListener("click", closeModal);
+      $("modal").addEventListener("click", (e) => {
+        if (e.target === $("modal")) closeModal();
+      });
+
+      $("placeForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!uid){
+          alert("Not signed in yet. Try again in a second.");
+          return;
+        }
+
+        const id = $("docId").value.trim();
+        const data = {
+          place: $("place").value.trim(),
+          location: $("location").value.trim(),
+          type: $("type").value,
+          flatWhiteRating: $("flatWhiteRating").value ? Number($("flatWhiteRating").value) : null,
+          flatWhiteNotes: $("flatWhiteNotes").value.trim(),
+          priceFlatWhite: parseMoney($("priceFlatWhite").value),
+          priceAltMilk: parseMoney($("priceAltMilk").value),
+          priceSyrup: parseMoney($("priceSyrup").value),
+          sillyDrinks: $("sillyDrinks").checked,
+          vibeTags: [...selectedVibes],
+          whyHere: $("whyHere").value.trim(),
+          wouldReturn: $("wouldReturn").value === "" ? null : ($("wouldReturn").value === "true"),
+          updatedAt: serverTimestamp(),
+          updatedBy: uid
+        };
+
+        try {
+          if (id){
+            await updateDoc(doc(db, "places", id), data);
+          } else {
+            await addDoc(collection(db, "places"), {
+              ...data,
+              createdAt: serverTimestamp(),
+              createdBy: uid
+            });
+          }
+          closeModal();
+        } catch (err){
+          console.error(err);
+          alert("Save failed. Check Firestore rules and your config.");
+        }
+      });
+
+      $("deleteBtn").addEventListener("click", async () => {
+        const id = $("docId").value.trim();
+        if (!id) return;
+        if (!confirm("Delete this place?")) return;
+        try {
+          await deleteDoc(doc(db, "places", id));
+          closeModal();
+        } catch (err){
+          console.error(err);
+          alert("Delete failed.");
+        }
+      });
+
+      // Filters
+      $("searchBox").addEventListener("input", applyFilters);
+      $("typeFilter").addEventListener("change", applyFilters);
+      $("returnFilter").addEventListener("change", applyFilters);
+
+      document.querySelectorAll(".vibeFilterBtn").forEach(btn => {
+        btn.addEventListener("click", () => toggleVibeFilter(btn.getAttribute("data-vibe")));
+      });
+
+      $("clearFiltersBtn").addEventListener("click", () => {
+        $("searchBox").value = "";
+        $("typeFilter").value = "";
+        $("returnFilter").value = "";
+        activeVibeFilter = "";
+        document.querySelectorAll(".vibeFilterBtn").forEach(b => {
+          b.classList.remove("bg-slate-900","text-white","border-slate-900");
+        });
+        applyFilters();
+      });
+
+      // Flow buttons
+      document.querySelectorAll("button[data-flow-budget]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          flow.budget = btn.getAttribute("data-flow-budget");
+          setFlowButtonState("data-flow-budget", flow.budget);
+        });
+      });
+
+      document.querySelectorAll("button[data-flow-atmo]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          flow.atmo = btn.getAttribute("data-flow-atmo");
+          setFlowButtonState("data-flow-atmo", flow.atmo);
+        });
+      });
+
+      document.querySelectorAll("button[data-flow-intent]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          flow.intent = btn.getAttribute("data-flow-intent");
+          setFlowButtonState("data-flow-intent", flow.intent);
+        });
+      });
+
+      $("flowSilly").addEventListener("change", () => flow.silly = $("flowSilly").value);
+      $("flowReturn").addEventListener("change", () => flow.onlyReturn = $("flowReturn").value);
+      $("flowQuality").addEventListener("change", () => flow.quality = $("flowQuality").value);
+
+      $("runSuggestBtn").addEventListener("click", () => renderSuggestions());
+      $("resetFlowBtn").addEventListener("click", () => resetFlow());
+
+      // init visuals
+      resetFlow();
+      renderVibePicker();
+      renderChosenVibes();
+    </script>
+  </body>
+</html>
