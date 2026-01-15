@@ -1,429 +1,244 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Coffee, 
-  MapPin, 
-  Plus, 
-  Search, 
-  Edit2, 
-  Trash2, 
-  Star, 
-  Tag, 
-  ArrowRight, 
-  ChevronRight, 
-  Sparkles,
-  Info,
-  DollarSign,
-  Undo2,
-  PenTool,
-  Wind,
-  VolumeX,
-  Palette,
-  Users,
-  Factory,
-  Home,
-  Sun,
-  Utensils,
-  Beer,
-  Wine,
-  Briefcase,
-  Zap,
-  Croissant,
-  CheckCircle2,
-  Loader2
-} from 'lucide-react';
-import './App.css';
-
-// Icon Mappings - using object keys since we can't use JSX at module level
-const TYPE_ICON_NAMES = {
-  'Coffee shop': 'Coffee',
-  'Specialty Roaster': 'Zap',
-  'Cafe': 'Utensils',
-  'Bakery': 'Croissant',
-  'Bar': 'Wine',
-  'Pub': 'Beer',
-  'Work-friendly': 'Briefcase',
-  'Quick Stop': 'Zap'
-};
-
-const VIBE_ICON_NAMES = {
-  'Writing Vibes': 'PenTool',
-  'Chill': 'Wind',
-  'Quiet': 'VolumeX',
-  'Aesthetic': 'Palette',
-  'Social': 'Users',
-  'Industrial': 'Factory',
-  'Cozy': 'Home',
-  'Outdoor': 'Sun'
-};
-
-// Helper to render icons
-const IconComponent = ({ name, size = 14 }) => {
-  const iconMap = {
-    Coffee, MapPin, Plus, Edit2, Trash2, Star, Tag, ChevronRight, Sparkles,
-    DollarSign, Undo2, PenTool, Wind, VolumeX, Palette, Users, Factory, Home,
-    Sun, Utensils, Beer, Wine, Briefcase, Zap, Croissant, CheckCircle2, Loader2
-  };
-  const Icon = iconMap[name];
-  return Icon ? <Icon size={size} /> : null;
-};
-
-const PLACE_TYPES = Object.keys(TYPE_ICON_NAMES);
-const VIBE_OPTIONS = Object.keys(VIBE_ICON_NAMES);
+import { useState } from 'react';
 
 export default function App() {
-  const [user, setUser] = useState({ uid: 'demo-user' });
-  const [places, setPlaces] = useState([]);
+  const [places, setPlaces] = useState([
+    {
+      id: 1,
+      place: 'Kofra',
+      location: 'Upper St Giles',
+      type: 'Coffee shop',
+      fwRating: 5,
+      fwPrice: '3.50',
+      vibes: ['Chill', 'Aesthetic'],
+      whyHere: 'Great atmosphere and excellent coffee'
+    }
+  ]);
   const [isAdding, setIsAdding] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [view, setView] = useState('list'); 
-  const [loading, setLoading] = useState(false);
-  const [saveStatus, setSaveStatus] = useState('idle');
-
-  const initialFormState = {
+  const [formData, setFormData] = useState({
     place: '',
     location: '',
     type: 'Coffee shop',
     fwRating: 3,
     fwPrice: '',
-    altMilkPrice: '',
-    syrupPrice: '',
     vibes: [],
     whyHere: '',
-  };
-  const [formData, setFormData] = useState(initialFormState);
-
-  const [matcherStep, setMatcherStep] = useState(0);
-  const [matcherCriteria, setMatcherCriteria] = useState({
-    budget: null, 
-    vibe: null,
   });
 
-  const handleSubmit = async (e) => {
+  const handleAddPlace = (e) => {
     e.preventDefault();
-    if (!user) return;
-
-    setSaveStatus('saving');
-    const dataToSave = { 
-      ...formData, 
-      id: editingId || Date.now().toString(),
-      updatedAt: Date.now(),
-      userId: user.uid
-    };
-
-    try {
-      if (editingId) {
-        setPlaces(places.map(p => p.id === editingId ? dataToSave : p));
-      } else {
-        setPlaces([dataToSave, ...places]);
+    if (!formData.place || !formData.location) return;
+    
+    setPlaces([
+      ...places,
+      {
+        ...formData,
+        id: Date.now()
       }
-      
-      setSaveStatus('saved');
-      setTimeout(() => {
-        setSaveStatus('idle');
-        resetForm();
-      }, 800);
-    } catch (err) {
-      console.error("Critical Save Error:", err);
-      setSaveStatus('error');
-      setTimeout(() => setSaveStatus('idle'), 3000);
-    }
-  };
-
-  const resetForm = () => {
-    setFormData(initialFormState);
+    ]);
+    
+    setFormData({
+      place: '',
+      location: '',
+      type: 'Coffee shop',
+      fwRating: 3,
+      fwPrice: '',
+      vibes: [],
+      whyHere: '',
+    });
     setIsAdding(false);
-    setEditingId(null);
   };
 
-  const startEdit = (place) => {
-    setFormData(place);
-    setEditingId(place.id);
-    setIsAdding(true);
-  };
-
-  const deletePlace = (id) => {
+  const handleDelete = (id) => {
     setPlaces(places.filter(p => p.id !== id));
   };
 
-  const toggleVibe = (vibe) => {
-    setFormData(prev => ({
-      ...prev,
-      vibes: prev.vibes?.includes(vibe) 
-        ? prev.vibes.filter(v => v !== vibe) 
-        : [...(prev.vibes || []), vibe]
-    }));
-  };
-
-  const suggestions = useMemo(() => {
-    return places.filter(p => {
-      if (matcherCriteria.budget === 'affordable' && parseFloat(p.fwPrice) > 3.5) return false;
-      if (matcherCriteria.budget === 'high-end' && parseFloat(p.fwPrice) <= 3.5) return false;
-      if (matcherCriteria.vibe && !p.vibes?.includes(matcherCriteria.vibe)) return false;
-      return true;
-    });
-  }, [places, matcherCriteria]);
-
-
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-stone-50 text-orange-900">
-        <div className="flex flex-col items-center">
-          <Loader2 size={40} className="animate-spin text-orange-600 mb-4" />
-          <p className="font-medium">Loading your journal...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-stone-50 text-stone-900 font-sans pb-20">
-      <header className="bg-white border-b border-stone-200 sticky top-0 z-30 px-6 py-4 flex justify-between items-center shadow-sm">
-        <div className="flex items-center gap-2">
-          <div className="bg-orange-600 p-2 rounded-xl text-white">
-            <Coffee size={24} />
-          </div>
-          <h1 className="text-xl font-bold tracking-tight text-stone-800 uppercase">Norwich Coffee</h1>
-        </div>
-        <div className="flex gap-2">
-          <button 
-            onClick={() => setView('matcher')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${view === 'matcher' ? 'bg-orange-600 text-white' : 'hover:bg-stone-100 text-stone-600'}`}
+    <div className="min-h-screen bg-stone-50">
+      {/* Header */}
+      <header className="bg-white border-b border-stone-200 sticky top-0 z-30">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-stone-800">☕ Norwich Coffee</h1>
+          <button
+            onClick={() => setIsAdding(true)}
+            className="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-700 transition"
           >
-            Vibe Matcher
-          </button>
-          <button 
-            onClick={() => setView('list')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${view === 'list' ? 'bg-orange-600 text-white' : 'hover:bg-stone-100 text-stone-600'}`}
-          >
-            My Places
+            + Add Place
           </button>
         </div>
       </header>
 
+      {/* Main Content */}
       <main className="max-w-4xl mx-auto p-6">
-        {view === 'list' ? (
-          <>
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-stone-800">Your Catalog</h2>
-                <p className="text-xs text-stone-400 font-medium">Synced and secured</p>
-              </div>
-              <button 
-                onClick={() => setIsAdding(true)}
-                className="bg-stone-900 text-white px-5 py-2.5 rounded-full flex items-center gap-2 hover:bg-stone-800 transition-all shadow-lg active:scale-95"
-              >
-                <Plus size={20} /> Add New Place
-              </button>
-            </div>
-
-            {places.length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-stone-200">
-                <Coffee size={48} className="mx-auto mb-4 text-stone-300" />
-                <p className="text-stone-500 mb-4 font-medium">Start your Norwich tour!</p>
-                <button onClick={() => setIsAdding(true)} className="text-orange-600 font-bold">
-                  Log your first cup →
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {places.map((p) => (
-                  <div key={p.id} className="bg-white p-5 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow group">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="text-xl font-bold text-stone-800">{p.place}</h3>
-                        <div className="flex items-center gap-1 text-stone-500 text-sm">
-                          <MapPin size={14} /> {p.location}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg text-sm font-bold">
-                        <Star size={14} className="fill-orange-500 text-orange-500" />
-                        {p.fwRating}/5
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 my-4">
-                      <span className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-stone-500 border border-stone-200 px-2.5 py-1 rounded-lg bg-stone-50">
-                        <IconComponent name={TYPE_ICON_NAMES[p.type]} size={12} /> {p.type}
-                      </span>
-                      {p.vibes && p.vibes.map(v => (
-                        <span key={v} className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider text-orange-700 bg-orange-100/50 border border-orange-200 px-2.5 py-1 rounded-lg">
-                          <IconComponent name={VIBE_ICON_NAMES[v]} size={12} /> {v}
-                        </span>
-                      ))}
-                    </div>
-
-                    <p className="text-sm text-stone-600 line-clamp-2 italic mb-5 leading-relaxed">"{p.whyHere}"</p>
-
-                    <div className="flex justify-between items-center pt-4 border-t border-stone-100 opacity-80 group-hover:opacity-100 transition-opacity">
-                      <div className="flex items-center gap-3">
-                        <div className="text-xs font-semibold text-stone-400 flex items-center gap-1">
-                          <DollarSign size={12} /> FW: £{p.fwPrice || '?' }
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        <button onClick={() => startEdit(p)} className="p-2 text-stone-400 hover:text-stone-900">
-                          <Edit2 size={18} />
-                        </button>
-                        <button onClick={() => deletePlace(p.id)} className="p-2 text-stone-400 hover:text-red-600">
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
+        {places.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-stone-200">
+            <p className="text-stone-500 mb-4">No coffee shops logged yet</p>
+            <button
+              onClick={() => setIsAdding(true)}
+              className="text-orange-600 font-bold hover:underline"
+            >
+              Log your first place →
+            </button>
+          </div>
         ) : (
-          <div className="max-w-2xl mx-auto py-10">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold mb-2">Vibe Matcher</h2>
-              <p className="text-stone-500 italic">Finding the perfect spot...</p>
-            </div>
-            <div className="bg-white rounded-3xl shadow-xl p-8 border border-stone-100 min-h-[400px]">
-              {matcherStep === 0 && (
-                <div className="animate-in fade-in slide-in-from-bottom-4">
-                  <h3 className="text-xl font-semibold mb-6 text-center">Step 1: Budget?</h3>
-                  <div className="grid grid-cols-1 gap-3">
-                    {['affordable', 'high-end', 'any'].map(id => (
-                      <button 
-                        key={id}
-                        onClick={() => { setMatcherCriteria({...matcherCriteria, budget: id}); setMatcherStep(1); }}
-                        className="flex items-center justify-between p-5 rounded-2xl border-2 border-stone-100 hover:border-orange-500 hover:bg-orange-50 transition-all text-left"
-                      >
-                        <span className="font-medium text-lg uppercase tracking-wide">
-                          {id === 'any' ? '💰 Anything' : id === 'high-end' ? '✨ Premium' : '💸 Affordable'}
-                        </span>
-                        <ChevronRight className="text-stone-300" />
-                      </button>
-                    ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {places.map((place) => (
+              <div key={place.id} className="bg-white p-5 rounded-lg border border-stone-200 shadow-sm hover:shadow-md transition">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="text-lg font-bold text-stone-800">{place.place}</h3>
+                    <p className="text-sm text-stone-500">📍 {place.location}</p>
+                  </div>
+                  <div className="bg-orange-100 text-orange-700 px-2 py-1 rounded text-sm font-bold">
+                    ⭐ {place.fwRating}/5
                   </div>
                 </div>
-              )}
-              {matcherStep === 1 && (
-                <div className="animate-in fade-in slide-in-from-right-4">
-                  <h3 className="text-xl font-semibold mb-6 text-center">Step 2: Vibe?</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    {VIBE_OPTIONS.map(v => (
-                      <button 
-                        key={v}
-                        onClick={() => { setMatcherCriteria({...matcherCriteria, vibe: v}); setMatcherStep(2); }}
-                        className="flex items-center gap-3 p-4 rounded-xl border-2 border-stone-100 hover:border-orange-500 hover:bg-orange-50 transition-all font-medium"
-                      >
-                        <span className="text-orange-600"><IconComponent name={VIBE_ICON_NAMES[v]} size={14} /></span>
-                        {v}
-                      </button>
+
+                <p className="text-xs text-stone-400 mb-2">{place.type}</p>
+                
+                {place.vibes.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {place.vibes.map((vibe) => (
+                      <span key={vibe} className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">
+                        {vibe}
+                      </span>
                     ))}
                   </div>
-                  <button onClick={() => setMatcherStep(0)} className="mt-8 flex items-center gap-2 text-stone-400 hover:text-stone-900 mx-auto font-medium">
-                    <Undo2 size={16} /> Back
+                )}
+
+                <p className="text-sm text-stone-600 mb-3 italic">"{place.whyHere}"</p>
+
+                <div className="flex justify-between items-center pt-3 border-t border-stone-100">
+                  <p className="text-xs text-stone-400">£{place.fwPrice}</p>
+                  <button
+                    onClick={() => handleDelete(place.id)}
+                    className="text-stone-400 hover:text-red-600 transition"
+                  >
+                    🗑️
                   </button>
                 </div>
-              )}
-              {matcherStep === 2 && (
-                <div className="animate-in zoom-in-95 duration-300">
-                  <h3 className="text-xl font-semibold mb-6 text-center">Top Picks:</h3>
-                  {suggestions.length > 0 ? (
-                    <div className="space-y-4">
-                      {suggestions.slice(0, 3).map(p => (
-                        <div key={p.id} className="bg-orange-50 p-6 rounded-2xl border-2 border-orange-200">
-                          <h4 className="text-2xl font-black text-orange-900">{p.place}</h4>
-                          <p className="text-orange-800/70 mb-4 text-sm font-medium">{p.location}</p>
-                          <div className="bg-white p-4 rounded-xl italic text-sm text-stone-700 shadow-sm border border-orange-100">"{p.whyHere}"</div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-10"><p className="text-stone-500 font-medium">No matches in your current journal!</p></div>
-                  )}
-                  <button onClick={() => { setMatcherStep(0); setMatcherCriteria({budget: null, vibe: null}); }} className="w-full mt-8 bg-stone-900 text-white p-4 rounded-xl font-bold">Reset</button>
-                </div>
-              )}
-            </div>
+              </div>
+            ))}
           </div>
         )}
       </main>
 
+      {/* Modal */}
       {isAdding && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-          <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={resetForm} />
-          <div className="relative bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl p-6 sm:p-10 border border-stone-200 animate-in zoom-in-95">
-            <h2 className="text-3xl font-bold mb-8 text-stone-800 flex items-center gap-3">
-              {editingId ? <Edit2 className="text-orange-600" /> : <Sparkles className="text-orange-600" />}
-              {editingId ? 'Update Entry' : 'Log a Discovery'}
-            </h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Add Coffee Shop</h2>
             
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Place Name</label>
-                  <input required className="w-full bg-stone-50 border-stone-200 rounded-xl p-3 border-2 outline-none focus:border-orange-500" placeholder="e.g. Kofra" value={formData.place} onChange={e => setFormData({...formData, place: e.target.value})} />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Location</label>
-                  <input required className="w-full bg-stone-50 border-stone-200 rounded-xl p-3 border-2 outline-none focus:border-orange-500" placeholder="e.g. Upper St Giles" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} />
-                </div>
+            <form onSubmit={handleAddPlace} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-stone-700 mb-1">Place Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Kofra"
+                  value={formData.place}
+                  onChange={(e) => setFormData({ ...formData, place: e.target.value })}
+                  className="w-full border border-stone-300 rounded px-3 py-2 focus:outline-none focus:border-orange-500"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-2">Type</label>
-                <div className="flex flex-wrap gap-2">
-                  {PLACE_TYPES.map(t => (
-                    <button key={t} type="button" onClick={() => setFormData({...formData, type: t})} className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border-2 transition-all ${formData.type === t ? 'border-orange-500 bg-orange-50 text-orange-700 shadow-sm' : 'border-stone-100 text-stone-700 bg-stone-50 hover:bg-white'}`}>
-                      <IconComponent name={TYPE_ICON_NAMES[t]} size={14} /> {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-orange-50/50 p-6 rounded-2xl border border-orange-100">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-orange-800/60 mb-2">FW Quality</label>
-                    <div className="flex gap-2">
-                      {[1,2,3,4,5].map(star => (
-                        <button key={star} type="button" onClick={() => setFormData({...formData, fwRating: star})} className={formData.fwRating >= star ? 'text-orange-500' : 'text-stone-300'}>
-                          <Star size={28} fill={formData.fwRating >= star ? 'currentColor' : 'none'} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-widest text-orange-800/60 mb-2">Price (£)</label>
-                    <input type="number" step="0.01" className="w-full bg-white border-orange-100 rounded-xl p-3 border-2 outline-none focus:border-orange-400" value={formData.fwPrice} onChange={e => setFormData({...formData, fwPrice: e.target.value})} />
-                  </div>
-                </div>
+                <label className="block text-sm font-semibold text-stone-700 mb-1">Location *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Upper St Giles"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  className="w-full border border-stone-300 rounded px-3 py-2 focus:outline-none focus:border-orange-500"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-widest text-stone-400 mb-3">Vibe Tags</label>
-                <div className="flex flex-wrap gap-2">
-                  {VIBE_OPTIONS.map(v => (
-                    <button 
-                      key={v} 
-                      type="button" 
-                      onClick={() => toggleVibe(v)} 
-                      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold border-2 transition-all ${formData.vibes?.includes(v) ? 'border-stone-900 bg-stone-900 text-white shadow-lg' : 'border-stone-200 text-stone-900 bg-stone-100/50 hover:border-stone-300'}`}
-                    >
-                      <IconComponent name={VIBE_ICON_NAMES[v]} size={14} /> {v}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <textarea className="w-full bg-stone-50 border-stone-200 rounded-xl p-4 border-2 min-h-[100px] outline-none focus:border-orange-500" placeholder="Notes..." value={formData.whyHere} onChange={e => setFormData({...formData, whyHere: e.target.value})} />
-
-              <div className="flex gap-3 pt-4">
-                <button type="button" onClick={resetForm} className="flex-1 px-6 py-4 font-bold text-stone-400">Cancel</button>
-                <button 
-                  type="submit" 
-                  disabled={saveStatus === 'saving'}
-                  className={`flex-[2] text-white px-6 py-4 rounded-2xl font-bold shadow-xl transition-all flex items-center justify-center gap-2 ${saveStatus === 'error' ? 'bg-red-500' : 'bg-orange-600 hover:bg-orange-700'}`}
+                <label className="block text-sm font-semibold text-stone-700 mb-1">Type</label>
+                <select
+                  value={formData.type}
+                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                  className="w-full border border-stone-300 rounded px-3 py-2 focus:outline-none focus:border-orange-500"
                 >
-                  {saveStatus === 'saving' && <Loader2 className="animate-spin" size={20} />}
-                  {saveStatus === 'saved' && <CheckCircle2 size={20} />}
-                  {saveStatus === 'error' && 'Failed to Save'}
-                  {saveStatus === 'idle' && (editingId ? 'Update Entry' : 'Save Discovery')}
+                  <option>Coffee shop</option>
+                  <option>Cafe</option>
+                  <option>Bakery</option>
+                  <option>Bar</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-stone-700 mb-1">Rating</label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, fwRating: star })}
+                      className={`text-2xl ${formData.fwRating >= star ? 'opacity-100' : 'opacity-30'}`}
+                    >
+                      ⭐
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-stone-700 mb-1">Price (£)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="3.50"
+                  value={formData.fwPrice}
+                  onChange={(e) => setFormData({ ...formData, fwPrice: e.target.value })}
+                  className="w-full border border-stone-300 rounded px-3 py-2 focus:outline-none focus:border-orange-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-stone-700 mb-2">Vibes</label>
+                {['Chill', 'Quiet', 'Social', 'Aesthetic', 'Cozy', 'Writing'].map((vibe) => (
+                  <label key={vibe} className="flex items-center gap-2 mb-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.vibes.includes(vibe)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData({ ...formData, vibes: [...formData.vibes, vibe] });
+                        } else {
+                          setFormData({ ...formData, vibes: formData.vibes.filter(v => v !== vibe) });
+                        }
+                      }}
+                      className="w-4 h-4 rounded"
+                    />
+                    <span className="text-sm text-stone-700">{vibe}</span>
+                  </label>
+                ))}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-stone-700 mb-1">Notes</label>
+                <textarea
+                  placeholder="Why you like this place..."
+                  value={formData.whyHere}
+                  onChange={(e) => setFormData({ ...formData, whyHere: e.target.value })}
+                  className="w-full border border-stone-300 rounded px-3 py-2 focus:outline-none focus:border-orange-500 h-24"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsAdding(false)}
+                  className="flex-1 px-4 py-2 text-stone-700 border border-stone-300 rounded hover:bg-stone-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-orange-600 text-white rounded font-semibold hover:bg-orange-700 transition"
+                >
+                  Save
                 </button>
               </div>
             </form>
