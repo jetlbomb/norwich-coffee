@@ -107,9 +107,9 @@
             <div class="rounded-2xl border border-transparent p-3">
               <p class="text-sm font-medium">1) Budget vibe</p>
               <div class="mt-2 grid grid-cols-3 gap-2">
-                <button data-flow-budget="any" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Any</button>
-                <button data-flow-budget="affordable" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Affordable</button>
-                <button data-flow-budget="highend" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">High-end</button>
+                <button data-flow-budget="any" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Any</button>
+                <button data-flow-budget="affordable" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Affordable</button>
+                <button data-flow-budget="highend" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">High-end</button>
               </div>
               <p class="mt-2 text-xs text-slate-500">Uses your “Price of flat white”. If you haven’t filled prices, it won’t penalise.</p>
             </div>
@@ -118,9 +118,9 @@
             <div class="rounded-2xl border border-transparent p-3">
               <p class="text-sm font-medium">2) Atmosphere</p>
               <div class="mt-2 grid grid-cols-3 gap-2">
-                <button data-flow-atmo="any" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Any</button>
-                <button data-flow-atmo="quiet" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Quiet</button>
-                <button data-flow-atmo="busy" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Busy</button>
+                <button data-flow-atmo="any" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Any</button>
+                <button data-flow-atmo="quiet" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Quiet</button>
+                <button data-flow-atmo="busy" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Busy</button>
               </div>
             </div>
 
@@ -128,12 +128,12 @@
             <div class="rounded-2xl border border-transparent p-3">
               <p class="text-sm font-medium">3) What are you doing there?</p>
               <div class="mt-2 grid grid-cols-2 gap-2">
-                <button data-flow-intent="writing" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Writing</button>
-                <button data-flow-intent="creative" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Creative</button>
-                <button data-flow-intent="social" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Social</button>
-                <button data-flow-intent="cosy" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Cosy</button>
-                <button data-flow-intent="inspiring" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Inspiring</button>
-                <button data-flow-intent="aesthetic" class="flowBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Aesthetic</button>
+                <button data-flow-intent="writing" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Writing</button>
+                <button data-flow-intent="creative" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Creative</button>
+                <button data-flow-intent="social" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Social</button>
+                <button data-flow-intent="cosy" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Cosy</button>
+                <button data-flow-intent="inspiring" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Inspiring</button>
+                <button data-flow-intent="aesthetic" class="flowBtn rounded-2xl border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50">Aesthetic</button>
               </div>
               <p class="mt-2 text-xs text-slate-500">Matches against your Vibe tags.</p>
             </div>
@@ -144,7 +144,7 @@
               <div class="mt-2 space-y-2">
                 <label class="flex items-center justify-between gap-3 text-sm">
                   <span>Silly drinks a plus?</span>
-                  <select id="flowSilly" class="rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
+                  <select id="flowSilly" class="rounded-2xl border border-slate-100 bg-white px-3 py-2 text-sm">
                     <option value="any">Any</option>
                     <option value="yes">Yes please</option>
                     <option value="no">No thanks</option>
@@ -184,55 +184,48 @@
           </div>
         </div>
 
-        <div class="mt-6 rounded-2xl border border-slate-200/50 bg-white p-5 shadow-sm transition hover:shadow-md">
-          <h2 class="text-base font-semibold">Quick filters</h2>
-          <p class="text-sm text-slate-600">This filters the list on the right.</p>
-
-          <div class="mt-3 space-y-3">
-            <input id="searchBox" type="text" placeholder="Search by place, location, notes…"
-              class="w-full rounded-2xl border border-transparent bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-200"/>
-
-            <div class="grid grid-cols-2 gap-2">
-              <select id="typeFilter" class="rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
-                <option value="">All types</option>
-                <option value="cafe">Cafe</option>
-                <option value="coffee shop">Coffee shop</option>
-                <option value="farm shop">Farm shop</option>
-                <option value="bar">Bar</option>
-                <option value="pub">Pub</option>
-                <option value="restaurant">Restaurant</option>
-                <option value="truck">Truck</option>
-              </select>
-
-              <select id="returnFilter" class="rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
-                <option value="">Return? (any)</option>
-                <option value="true">Would return</option>
-                <option value="false">Would not return</option>
-              </select>
-            </div>
-
-            <div class="flex flex-wrap gap-2">
-              <button data-vibe="writing" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Writing</button>
-              <button data-vibe="creative" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Creative</button>
-              <button data-vibe="social" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Social</button>
-              <button data-vibe="cosy" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Cosy</button>
-              <button data-vibe="quiet" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Quiet</button>
-              <button data-vibe="busy" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Busy</button>
-              <button data-vibe="inspiring" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Inspiring</button>
-              <button data-vibe="aesthetic" class="vibeFilterBtn rounded-2xl border border-transparent px-3 py-2 text-sm hover:bg-slate-50">Aesthetic</button>
-            </div>
-
-            <div class="flex items-center justify-between">
-              <p id="countP" class="text-sm text-slate-600">0 places</p>
-              <button id="clearFiltersBtn" class="text-sm font-medium text-indigo-700 hover:text-indigo-600">Clear filters</button>
-            </div>
-          </div>
-        </div>
+        
       </main>
 
       <!-- Places list -->
       <main id="pagePlaces" class="mx-auto max-w-6xl px-4 py-6">
         <div class="rounded-3xl bg-white/70 shadow-sm ring-1 ring-slate-200/60 backdrop-blur">
+          <div class="mb-5 rounded-3xl bg-white/70 p-4 shadow-sm ring-1 ring-slate-200/60 backdrop-blur">
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <p class="text-sm font-semibold">Places</p>
+      <p id="countP" class="text-sm text-slate-600">0 places</p>
+    </div>
+
+    <button id="clearFiltersBtn"
+      class="self-start rounded-2xl px-3 py-2 text-sm font-medium text-[var(--orange-700)]
+             hover:bg-[var(--orange-100)] transition sm:self-auto">
+      Clear filters
+    </button>
+  </div>
+
+  <div class="mt-3 grid gap-3 sm:grid-cols-3">
+    <input id="searchBox" type="text" placeholder="Search places…"
+      class="field" />
+
+    <select id="typeFilter" class="field">
+      <option value="">All types</option>
+      <option value="cafe">Cafe</option>
+      <option value="coffee shop">Coffee shop</option>
+      <option value="farm shop">Farm shop</option>
+      <option value="bar">Bar</option>
+      <option value="pub">Pub</option>
+      <option value="restaurant">Restaurant</option>
+      <option value="truck">Truck</option>
+    </select>
+
+    <select id="returnFilter" class="field">
+      <option value="">Return? (any)</option>
+      <option value="true">Would return</option>
+      <option value="false">Would not return</option>
+    </select>
+  </div>
+</div>
           <div id="placesList" class="p-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
         </div>
 
