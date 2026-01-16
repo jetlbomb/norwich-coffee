@@ -582,10 +582,17 @@
   const price = (p.priceFlatWhite != null) ? money(p.priceFlatWhite) : "";
   const icon = placeIcon(p.type);
 const tile = `
-  <div class="flex h-28 w-full items-center justify-center rounded-2xl
+  <div class="relative h-28 w-full rounded-2xl
               bg-gradient-to-br from-[var(--orange-100)] to-white
-              text-4xl ring-1 ring-slate-200/60">
-    <span aria-hidden="true">${icon}</span>
+              ring-1 ring-slate-200/60">
+    <span class="absolute inset-0 flex items-center justify-center text-4xl">
+      ${icon}
+    </span>
+    ${p.type ? `
+      <span class="absolute bottom-2 right-2 rounded-full bg-white/80 px-2 py-0.5 text-xs font-medium">
+        ${esc(p.type)}
+      </span>
+    ` : ""}
   </div>
 `;
 
