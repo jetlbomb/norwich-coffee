@@ -35,6 +35,19 @@
   --orange-900: #71351d;
   --orange-950: #3d190d;
 }
+.field {
+  border-radius: 1rem;
+  background: rgba(255,255,255,.75);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .06);
+  border: 1px solid rgba(148, 163, 184, .35);
+  padding: .55rem .75rem;
+  font-size: .875rem;
+  width: 100%;
+}
+.field:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(246, 216, 178, .9); /* orange-200 vibe */
+}
     </style>
   </head>
 
@@ -220,7 +233,7 @@
         </button>
       </div>
         <div class="rounded-3xl bg-white/70 shadow-sm ring-1 ring-slate-200/60 backdrop-blur">
-          <div id="placesList" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+          <div id="placesList" class="p-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
         </div>
 
         <p class="mt-3 text-xs text-slate-500">
@@ -233,8 +246,7 @@
       <div class="modal-backdrop absolute inset-0"></div>
 
       <div class="relative w-[95vw] max-w-3xl max-h-[90vh] overflow-y-auto">
-        <div class="mt-1 w-full rounded-2xl bg-white/70 px-3 py-2 text-sm shadow-sm ring-1 ring-slate-200/60
-          focus:outline-none focus:ring-2 focus:ring-[var(--orange-200)]">
+        <div class="rounded-3xl bg-white/80 shadow-xl ring-1 ring-slate-200/60 backdrop-blur">
           <div class="flex items-center justify-between border-b border-transparent p-5">
             <div>
               <h3 id="modalTitle" class="text-base font-semibold">Add place</h3>
@@ -249,12 +261,12 @@
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div>
                 <label class="text-sm font-medium">Place</label>
-                <input id="place" required class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., Kofra, Strangers…" />
+                <input id="place" required class="mt-1 field" placeholder="e.g., Kofra, Strangers…" />
               </div>
 
               <div>
                 <label class="text-sm font-medium">Location</label>
-                <input id="location" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., Pottergate, NR2…" />
+                <input id="location" class="mt-1 field" placeholder="e.g., Pottergate, NR2…" />
               </div>
 
               <div>
@@ -274,7 +286,7 @@
 
               <div>
                 <label class="text-sm font-medium">How good is the flat white?</label>
-                <select id="flatWhiteRating" class="mt-1 w-full rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
+                <select id="flatWhiteRating" class="mt-1 field">
                   <option value="">Select…</option>
                   <option value="1">1 — nope</option>
                   <option value="2">2 — ok</option>
@@ -286,22 +298,22 @@
 
               <div class="md:col-span-2">
                 <label class="text-sm font-medium">Characteristics of flat white</label>
-                <input id="flatWhiteNotes" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., silky, strong, too hot, perfect microfoam…" />
+                <input id="flatWhiteNotes" class="mt-1 field" placeholder="e.g., silky, strong, too hot, perfect microfoam…" />
               </div>
 
               <div>
                 <label class="text-sm font-medium">Price of flat white</label>
-                <input id="priceFlatWhite" inputmode="decimal" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., 3.60" />
+                <input id="priceFlatWhite" inputmode="decimal" class="mt-1 field" placeholder="e.g., 3.60" />
               </div>
 
               <div>
                 <label class="text-sm font-medium">Price of alt milk</label>
-                <input id="priceAltMilk" inputmode="decimal" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., 0.40" />
+                <input id="priceAltMilk" inputmode="decimal" class="mt-1 field" placeholder="e.g., 0.40" />
               </div>
 
               <div>
                 <label class="text-sm font-medium">Price of syrup</label>
-                <input id="priceSyrup" inputmode="decimal" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., 0.60" />
+                <input id="priceSyrup" inputmode="decimal" class="mt-1 field" placeholder="e.g., 0.60" />
               </div>
 
               <div class="flex items-center gap-3 pt-6">
@@ -318,12 +330,12 @@
 
               <div class="md:col-span-2">
                 <label class="text-sm font-medium">Why here?</label>
-                <textarea id="whyHere" rows="2" class="mt-1 w-full rounded-2xl border border-transparent px-3 py-2 text-sm" placeholder="e.g., meeting someone, writing session, near a walk…"></textarea>
+                <textarea id="whyHere" rows="2" class="mt-1 field" placeholder="e.g., meeting someone, writing session, near a walk…"></textarea>
               </div>
 
               <div class="md:col-span-2">
                 <label class="text-sm font-medium">Would you return?</label>
-                <select id="wouldReturn" class="mt-1 w-full rounded-2xl border border-transparent bg-white px-3 py-2 text-sm">
+                <select id="wouldReturn" class="mt-1 field">
                   <option value="">Select…</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
