@@ -21,6 +21,7 @@
       .chip button:hover { opacity:1; }
       .modal-backdrop { background: rgba(2,6,23,.55); }
       .mono { font-variant-numeric: tabular-nums; }
+      .hidden-page { display: none; }
       :root {
   --orange-50:  #fdf7ef;
   --orange-100: #fbedd9;
@@ -61,7 +62,7 @@
       </div>
     </header>
 
-    <main class="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-5">
+    <main id="pageVibes" class="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-5">
       <!-- Left: Flowchart suggestions -->
       <section class="lg:col-span-2">
         <div class="rounded-2xl border border-slate-200/50 bg-white p-5 shadow-sm transition hover:shadow-md">
@@ -202,10 +203,10 @@
             </div>
           </div>
         </div>
-      </section>
+      </main>
 
       <!-- Right: Places list -->
-      <section class="lg:col-span-3">
+      <<main id="pagePlaces" class="mx-auto max-w-6xl px-4 py-6">>
         <div class="rounded-2xl border border-slate-200/50 bg-[var(--orange-100)] hover:bg-[var(--orange-200)]">
           <div class="flex items-center justify-between gap-3 border-b border-transparent p-5">
             <div>
@@ -440,6 +441,29 @@
         else if (tone === "bad") pill.classList.add("bg-rose-50","text-rose-700","border","border-rose-200");
         else pill.classList.add("bg-slate-100","text-slate-700");
       }
+
+      function showPage(page) {
+        const places = document.getElementById("pagePlaces");
+        const vibes = document.getElementById("pageVibes");
+
+        if (!places || !vibes) return;
+
+        if (page === "vibes") {
+          places.classList.add("hidden");
+          vibes.classList.remove("hidden");
+        } else {
+          vibes.classList.add("hidden");
+          places.classList.remove("hidden");
+        }
+      }
+
+      function handleRoute() {
+        const hash = (location.hash || "#places").replace("#", "");
+        showPage(hash);
+      }
+
+      window.addEventListener("hashchange", handleRoute);
+      handleRoute(); // run on first load
 
       /***********************
        *  Modal
